@@ -2090,11 +2090,14 @@ function starteSpezialDruck() {
 function fuehreKombiUpdateAus() {
     const kombiBtn = document.getElementById("btn_kombi_import");
     if(kombiBtn) { kombiBtn.innerText = "Daten werden geladen..."; kombiBtn.style.opacity = "0.6"; }
-    const url = "spieler.txt?v=" + Date.now();
-    const spielerTextarea = document.getElementById("txt_import_area");
-    if (!spielerTextarea) return;
-    
-    fetch(url, { cache: "no-store" })
+//  KORREKTUR: Direktverknüpfung mit deiner Live-URL
+const url = "https://github.io" + Date.now();
+const spielerTextarea = document.getElementById("txt_import_area");
+if (!spielerTextarea) return;
+
+fetch(url, { cache: "no-store" })
+// ... Rest des Codes bleibt gleich
+
     .then(response => { if (!response.ok) throw new Error("Fehler beim Abruf."); return response.text(); })
     .then(daten => {
         if (daten && daten.trim().length > 0) {
