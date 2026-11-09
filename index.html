@@ -1647,8 +1647,57 @@ function autoDetectLeagueAndMatchday() {
 }
 
 function ladeSpielplanVonGitHub() {
-    // Ruft die spielplan.txt im Hintergrund von GitHub ab
+    // Button-Status visuell anpassen
+    const planBtn = document.getElementById("btn_plan_import");
+    if (planBtn) {
+        planBtn.innerText = "Spielplan wird geladen...";
+        planBtn.style.opacity = "0.6";
+    }
+
+    // Korrekter relativer Pfad mit Cache-Buster
+    const url = "./spielplan.txt?v=" + Date.now();
+    const previewTextarea = document.getElementById("txt_spielplan_preview");
+    if (!previewTextarea) return;
+
+    fetch(url, { cache: "no-store" })
+    .then(response => {
+        if (!response.ok) throw new Error("Spielplan-Datei konnte nicht abgerufen werden.");
+        return response.text();
+    })
+    .then(daten => {
+        if (daten && daten.trim().length > 0) {
+            // Text in die Vorschau-Textarea schreiben
+            previewTextarea.value = daten.trim();
+            
+            // Button zurücksetzen
+            if (planBtn) {
+                planBtn.innerText = "Spielplan frisch von GitHub abrufen 🔄";
+                planBtn.style.opacity = "1";
+            }
+            alert("Spielplan erfolgreich geladen!");
+            
+            // Falls du die automatische Erkennung direkt triggern willst:
+            if (typeof autoDetectLeagueAndMatchday === "function") {
+                autoDetectLeagueAndMatchday();
+            }
+        } else {
+            alert("Die Spielplan-Datei auf GitHub scheint leer zu sein.");
+            if (planBtn) {
+                planBtn.innerText = "Spielplan frisch von GitHub abrufen 🔄";
+                planBtn.style.opacity = "1";
+            }
+        }
+    })
+    .catch(error => {
+        console.error(error);
+        alert("Fehler beim Abrufen des Spielplans! Stelle sicher, dass spielplan.txt im Repository existiert.");
+        if (planBtn) {
+            planBtn.innerText = "Spielplan frisch von GitHub abrufen 🔄";
+            planBtn.style.opacity = "1";
+        }
+    });
 }
+
 
 function openLivePopup(matchId) {
     activePopupMatchId = Number(matchId);
